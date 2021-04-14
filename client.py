@@ -57,7 +57,7 @@ class Client:
 
         send = Send(self.sock, name)
         receive = Receive(self.sock, name)
- ]
+ 
         send.start()
         receive.start()
         self.sock.sendall('Server: {} has joined the chat. Say hi!'.format(name).encode('ascii'))
