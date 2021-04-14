@@ -20,8 +20,7 @@ class Server(threading.Thread):
         print("Listening at", sock.getsockname())
 
         while True:
-            sc = sock.accept()
-            sockname = sock.accept()
+            sc, sockname = sock.accept()
 
             print("Accepted a new connection from {} to {}".format(sc.getpeername(), sc.getsockname()))
 
@@ -37,7 +36,7 @@ class Server(threading.Thread):
             if connection.sockname != source:
                 connection.send(message)
 
-class ServerSocket(threading.Thread):    
+class ServerSocket(threading.Thread):
     def __init__(self, sc, sockname, server):
         super().__init__()
         self.sc = sc
@@ -47,15 +46,16 @@ class ServerSocket(threading.Thread):
     def run(self):
         while True:
             message = self.sc.recv(1024).decode('ascii')
-
             if message:
                 print('{} says {!r}'.format(self.sockname, message))
                 self.server.broadcast(message, self.sockname)
             else:
                 print('{} has closed the connection'.format(self.sockname))
                 self.sc.close()
-                server.remove_connection(self)
                 return
+    
+    def send(self, message):
+        self.sc.sendall(message.encode('ascii'))
     
     def send(self, message):
         self.sc.sendall(message.encode('ascii'))
@@ -73,8 +73,7 @@ def exit(server):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Chatroom Server')
     parser.add_argument('host', help='Interface the server listens at')
-    parser.add_argument('-p', metavar='PORT', type=int, default=1060,
-                        help='TCP port (default 1060)')
+    parser.add_argument('-p', metavar='PORT', type=int, default=1060, help='TCP port (default 1060)')
     args = parser.parse_args()
 
     server = Server(args.host, args.p)

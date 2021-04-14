@@ -51,7 +51,7 @@ class Client:
         print('Successfully connected to {}:{}'.format(self.host, self.port))
         
         print()
-        name = input('Your name: ')
+        name = input('Please login with your username: ')
         print()
         print('Welcome, {}! Getting ready to send and receive messages...'.format(name))
 
